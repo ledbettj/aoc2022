@@ -27,8 +27,7 @@ defmodule Day1 do
   def most_calories_per_elf(elves, count) do
     elves
     |> Enum.map(&Enum.sum/1)
-    |> Enum.sort
-    |> Enum.reverse
+    |> Enum.sort(:desc)
     |> Enum.take(count)
     |> Enum.sum
   end

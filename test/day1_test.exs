@@ -1,4 +1,4 @@
-defmodule AOCTest do
+defmodule Day1Test do
   import TestHelper
   use ExUnit.Case
 
