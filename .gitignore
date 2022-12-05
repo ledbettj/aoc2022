@@ -24,3 +24,4 @@ aoc2022-*.tar
 
 # Temporary files, for example, from tests.
 /tmp/
+.session.txt
