@@ -43,19 +43,19 @@ defmodule Day2 do
     score(outcome) + value(required_play)
   end
 
-  @spec result(play, play) :: integer
+  @spec result(play, play) :: 1 | 2 | 3 | 4 |5 | 6 | 7 | 8 | 9
   def result(opponent, self) do
     score(opponent, self) + value(self)
   end
 
-  @spec score(play, play) :: integer
+  @spec score(play, play) :: 0 | 3 | 6
   def score(:rock, :paper), do: 6
   def score(:paper, :scissors), do: 6
   def score(:scissors, :rock), do: 6
   def score(opponent, self) when opponent == self, do: 3
   def score(_opponent, _self), do: 0
 
-  @spec score(outcome) :: integer
+  @spec score(outcome) :: 0 | 3 | 6
   def score(:win), do: 6
   def score(:draw), do: 3
   def score(:loss), do: 0
