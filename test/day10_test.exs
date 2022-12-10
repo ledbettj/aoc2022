@@ -173,6 +173,19 @@ noop
     assert strength  == 13140
   end
 
+  test "day 2 example" do
+    program = @sample
+    |> String.trim
+    |> String.split("\n")
+    |> Enum.map(&Day10.Instruction.parse/1)
+
+    cpu = Enum.reduce(program, Day10.CPU.new, fn instruction, cpu ->
+      Day10.CPU.evaluate_instruction(cpu, instruction)
+    end)
+
+    IO.puts(cpu.screen)
+  end
+
   test "day 1 solution" do
     program = Enum.map(input_lines(10), &Day10.Instruction.parse/1)
 
@@ -190,5 +203,16 @@ noop
     end)
 
     assert strength  == 11_820
+  end
+
+  test "day 2 solution" do
+    program = input_lines(10)
+    |> Enum.map(&Day10.Instruction.parse/1)
+
+    cpu = Enum.reduce(program, Day10.CPU.new, fn instruction, cpu ->
+      Day10.CPU.evaluate_instruction(cpu, instruction)
+    end)
+
+    IO.puts(cpu.screen)
   end
 end
