@@ -8,7 +8,7 @@ defmodule Day11 do
 
     def inspect_item(monkey, item, opts \\ []) do
       worry = if Keyword.get(opts, :p2, true) do
-        monkey.operation.(item)
+        rem(monkey.operation.(item), 9699690) # lcd of inputs
       else
         div(monkey.operation.(item), 3)
       end
