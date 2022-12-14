@@ -75,9 +75,79 @@ class Day12
   end
 end
 
+class Day12p2
+  attr_reader :grid, :start, :finish
+
+  def initialize(blob)
+    @start = start
+    @finish = Set.new
+    @grid = blob
+      .strip
+      .lines
+      .each_with_index
+      .flat_map do |line, y|
+        line
+          .chars
+          .each_with_index
+          .map do |char, x|
+            ord = case char
+                  when 'S' then 'a'.ord
+                  when 'E' then @start = [x,y]; 'z'.ord
+                  else char.ord
+                  end
+            @finish.add([x,y]) if ord == 'a'.ord
+            [[x,y], ord]
+          end
+      end
+      .to_h
+  end
+
+  def shortest_cost
+    visited = Set.new
+    to_visit = []
+    cost = 0
+    current = start
+
+    loop do
+      visited.add(current)
+
+      neighbors = visitable_neighbors(current, visited, cost)
+      neighbors.each { |entry| visited.add(entry[:point]) }
+
+      to_visit += neighbors
+      to_visit.sort_by!{ |entry| entry[:cost] }
+      entry = to_visit.shift
+      cost = entry[:cost]
+      current = entry[:point]
+      return cost if finish.include?(current)
+    end
+  end
+
+  private
+
+  def visitable_neighbors(from, visited, cost)
+    offsets = [[0, 1],
+               [1, 0],
+               [0, -1],
+               [-1, 0]]
+    x, y = from
+
+    offsets
+      .map { |(dx, dy)| [x + dx, y + dy] }
+      .select { |p| !visited.include?(p) }
+      .select { |p| grid.key?(p) && grid[p] + 1 >= grid[from] }
+      .map { |p| { cost: cost + 1, point: p } }
+  end
+end
 
 d = Day12.new(sample, [0, 0], [5, 2])
 puts d.shortest_cost
 
 d = Day12.new(File.read("../test/inputs/day12.txt"), [0, 20], [52, 20])
+puts d.shortest_cost
+
+d = Day12p2.new(sample)
+puts d.shortest_cost
+
+d = Day12p2.new(File.read("../test/inputs/day12.txt"))
 puts d.shortest_cost
