@@ -37,9 +37,11 @@ class Scanner
           .captures
           .map(&:to_i)
 
-        range = (sx - bx).abs + (sy - by).abs
-        sensors.push(x: sx, y: sy, r: range)
-        beacons.add(x: bx, y: by)
+        sp = { x: sx, y: sy }
+        bp = { x: bx, y: by }
+        range = distance(sp, bp)
+        sensors.push(sp.merge(r: range))
+        beacons.add(bp)
       end
   end
 
@@ -62,10 +64,46 @@ class Scanner
 
     covered - beacons
   end
+
+  def covered?(p)
+    beacons.include?(p) || sensors.any? { |s| distance(s, p) <= s[:r] }
+  end
+
+  def distance(p1, p2)
+    (p2[:x]- p1[:x]).abs + (p2[:y] - p1[:y]).abs
+  end
+
+  def uncovered_border_point(s, bl, bh)
+
+    if s[:x] + s[:r] < bl || s[:x] - s[:r] > bh || s[:y] + s[:r] < bl || s[:y] - s[:r] > bh
+      return Set.new
+    end
+
+    # one unit outside of the border of this rect
+    r = s[:r] + 1
+    points = (0..r)
+    .flat_map { |dist| [dist, -dist] }
+    .flat_map { |x| [{x: s[:x] + x, y: s[:y] + (r - x.abs)}, {x: s[:x] + x, y: s[:y] - (r - x.abs)}] }
+    .filter { |p| p[:x] >= bl && p[:x] <= bh && p[:y] >= bl && p[:y] <= bh }
+    .find { |p| !covered?(p) }
+  end
+
+  def find_beacon(bl, bh)
+    sensors.find { |s| print '.'; uncovered_border_point(s, bl, bh) }
+  end
 end
 
 s = Scanner.new(sample)
 puts s.row_coverage(10).length
 
+#s = Scanner.new(File.read('../test/inputs/day15.txt'))
+#puts s.row_coverage(2000000).length
+
+s = Scanner.new(sample)
+p = s.find_beacon(0, 20)
+puts p[:x] * 4_000_000 + p[:y]
+
+
 s = Scanner.new(File.read('../test/inputs/day15.txt'))
-puts s.row_coverage(2000000).length
+p = s.find_beacon(0, 4000000)
+puts p[:x] * 4_000_000 + p[:y]
